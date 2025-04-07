@@ -1,6 +1,8 @@
 //taliyam123@gmail.com
 #include "Graph.hpp"
 using namespace graph;
+
+// Constructor: Initialize a graph with a given number of vertices
 Graph::Graph(int numOfVertex)
     {
         if(numOfVertex<=0){

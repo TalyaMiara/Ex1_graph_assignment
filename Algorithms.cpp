@@ -1,13 +1,16 @@
 //taliyam123@gmail.com
 #include "Algorithms.hpp"
 using namespace graph;
+// Breadth-First Search (BFS): Builds BFS tree and calculates distances from source node
 Graph Algorithms:: BFS(Graph& g, int src,int* dist){
     int numOfVertex = g.getNumOfVertex();
     if(src<0||src>=numOfVertex){
         throw std:: invalid_argument("source shoulde be between 0 to the num of vertex");
     }
+    
     Graph bfsTree(numOfVertex);
 
+    // Initialize parent, distance, and visited arrays
     int* parent = new int[numOfVertex];
     int* distance = new int[numOfVertex];
     int* visited =new int[numOfVertex];
@@ -15,13 +18,14 @@ Graph Algorithms:: BFS(Graph& g, int src,int* dist){
     for(int i=0; i<numOfVertex;i++){
         parent[i]=INT_MAX;
         distance[i]=INT_MAX;
-        visited[i]=0;
+        visited[i]=0;// 0 = white (unvisited)
     } 
     distance[src]=0;
-    visited[src]=1;
+    visited[src]=1;// 1 = gray (discovered)
 
     Queue queue=Queue();
     queue.enqueue(src);
+    // Traverse graph level by level
     while (!queue.isEmpty())
     {
         int u=queue.dequeue();
@@ -39,9 +43,9 @@ Graph Algorithms:: BFS(Graph& g, int src,int* dist){
             }
             adjencyList=adjencyList->next;
         }
-        visited[u]=2;
+        visited[u]=2; // 2 = black (finished)
     }
-
+    // Copy distance array to output if needed
     if(dist!=nullptr){
         for (int i = 0; i < numOfVertex; i++)
         {
@@ -53,6 +57,8 @@ Graph Algorithms:: BFS(Graph& g, int src,int* dist){
     delete[] distance;
     return bfsTree;
 }
+
+// DFSVisit: Helper function for recursive depth-first traversal
 void Algorithms::DFSVisit(Graph& g, int u, int* visited, int* parent, Graph& dfsTree, int* discovery, int* finish, int& time) {
     visited[u] = 1; 
     discovery[u] = ++time;
@@ -72,6 +78,7 @@ void Algorithms::DFSVisit(Graph& g, int u, int* visited, int* parent, Graph& dfs
     finish[u] = ++time;
 }
 
+// Depth-First Search (DFS): Visits all vertices and builds DFS tree
 Graph Algorithms::DFS(Graph& g, int src,int* disc, int* fin) {
     int numOfVertex = g.getNumOfVertex();
     Graph dfsTree(numOfVertex);
@@ -83,7 +90,7 @@ Graph Algorithms::DFS(Graph& g, int src,int* disc, int* fin) {
     int* discovery = new int[numOfVertex];
     int* finish = new int[numOfVertex];
     int time = 0;
-
+    // Initialize arrays
     for (int i = 0; i < numOfVertex; i++) {
         visited[i] = 0; 
         parent[i] = -1;
@@ -91,6 +98,8 @@ Graph Algorithms::DFS(Graph& g, int src,int* disc, int* fin) {
         finish[i] = -1;
     }
     DFSVisit(g, src, visited, parent, dfsTree, discovery, finish, time);
+
+    // Ensure disconnected components are also visited
     for (int u = 0; u < numOfVertex; u++) {
         if (visited[u] == 0) {
             DFSVisit(g, u, visited, parent, dfsTree, discovery, finish, time);
@@ -101,6 +110,7 @@ Graph Algorithms::DFS(Graph& g, int src,int* disc, int* fin) {
     for (int i = 0; i < numOfVertex; i++) {
         std::cout << "Vertex " << i << ": d=" << discovery[i] << ", f=" << finish[i] << std::endl;
     }
+    // Copy discovery and finish times to output if needed
     if(disc!=nullptr){
         for (int i = 0; i < numOfVertex; i++)
         {
@@ -123,11 +133,14 @@ Graph Algorithms::DFS(Graph& g, int src,int* disc, int* fin) {
 
     return dfsTree;
 }
+
+// Dijkstra's Algorithm: Finds the shortest path from a single source to all vertices (no negative weights)
 Graph Algorithms::dijkstra(Graph& g,int src,int* arr){
     int size= g.getNumOfVertex();
     if(src<0||src>=size){
         throw std:: invalid_argument("the value of source should be between 0 to num of vertex");
     }
+    // Check for negative weights
     Node** allEdge=g.getAdjencyList();
     for(int i=0;i<size;i++){
         Node* temp=allEdge[i];
@@ -142,6 +155,8 @@ Graph Algorithms::dijkstra(Graph& g,int src,int* arr){
     int* distance=new int[size];
     int* parent=new int[size];
     MinHeap minHeap(size);
+
+    // Initialize distances
     for ( int i = 0; i < size; i++)
     {
         distance[i]=INT_MAX;
@@ -170,6 +185,7 @@ Graph Algorithms::dijkstra(Graph& g,int src,int* arr){
     return tree;
 }
 
+// Relaxation function used by Dijkstra to update distances
 void Algorithms::realx(int u,int v,int weight,int* distance,int* parent,MinHeap& minHeap){
     if(distance[v]>(distance[u]+weight)){
         minHeap.insert(v,distance[u]+weight);
@@ -178,8 +194,11 @@ void Algorithms::realx(int u,int v,int weight,int* distance,int* parent,MinHeap&
     }
 }
 
+// Prim’s Algorithm: Builds a Minimum Spanning Tree (MST) using greedy edge selection
 Graph Algorithms::prim(Graph& g){
     int n=g.getNumOfVertex();
+
+    // First, ensure the graph is connected using BFS
     int* distance= new int[n]; 
     Graph bfsCheck=BFS(g,0,distance);
     bool booleanConnect=true;
@@ -200,6 +219,8 @@ Graph Algorithms::prim(Graph& g){
         weight[i]=INT_MAX;
         nearNeighbor[i]=INT_MAX;
     }
+
+    // Start from a random node
     int s = rand() % n;// random number between 0 and n-1;
     Node* temp=g.getAdjencyList()[s];
     while (temp!=nullptr)
@@ -212,7 +233,10 @@ Graph Algorithms::prim(Graph& g){
     Graph primGraph(n);
     UnionFind unionFind(n);
     int chosenEdge=0;
+
+    // Add (n-1) edges to build the MST
     while(chosenEdge<n-1){
+        // Find the edge with minimum weight
         int minIndex=0;
         for(int i=1;i<n;i++){
             if(weight[i]<weight[minIndex]){
@@ -239,8 +263,12 @@ Graph Algorithms::prim(Graph& g){
     delete[] nearNeighbor;
     return primGraph;
 }
+
+// Kruskal’s Algorithm: Builds a Minimum Spanning Tree (MST) using a greedy edge selection
 Graph Algorithms::kruskal(Graph& g){
     int numOfVertex=g.getNumOfVertex();
+
+    // Step 1: Check if the graph is connected using BFS
     int* distance= new int[numOfVertex]; 
     Graph bfsCheck=BFS(g,0,distance);
     bool booleanConnect=true;
@@ -256,11 +284,14 @@ Graph Algorithms::kruskal(Graph& g){
         throw std:: invalid_argument("the graph should be connected");
     }
     Node** allEdge=g.getAdjencyList();
-
+    // Step 2: Count total unique edges (undirected edges counted once)
     int numOfEdges=(int)(g.getNumOfEdjes()/2);
+
+    // Step 3: Create an array to store edges with their weights
     Node** sortEdges=new Node*[numOfEdges];
     Graph kruskalGraph(numOfVertex);
     int index=0;//the index of the new array- sortEdges
+    // Step 4: Store each edge only once (i < neighbor) and encode the edge using i*numOfVertex + j
     for(int i=0;i<numOfVertex;i++){
         Node* temp=allEdge[i];
         while (temp!=nullptr && index<numOfEdges)
@@ -272,6 +303,7 @@ Graph Algorithms::kruskal(Graph& g){
             temp=temp->next;
         }
     }
+    // Step 5: Sort edges by weight using simple bubble sort
     for(int i=0;i<numOfEdges;i++){
         for(int j=0;j<numOfEdges-i-1;j++){
             if(sortEdges[j]->weight>sortEdges[j+1]->weight){
@@ -281,7 +313,11 @@ Graph Algorithms::kruskal(Graph& g){
             }
         }
     }
+    // Step 6: Initialize Union-Find to manage disjoint sets
+
     UnionFind unionFind=UnionFind(numOfVertex);
+
+    // Step 7: Go through sorted edges, add edge to MST if it doesn’t form a cycle
     for(int i=0;i<numOfEdges;i++){
         int u=sortEdges[i]->vertex/numOfVertex;
         int v=sortEdges[i]->vertex%numOfVertex;
@@ -289,6 +325,7 @@ Graph Algorithms::kruskal(Graph& g){
             unionFind.unionn(u,v);
             kruskalGraph.addEdge(u,v,sortEdges[i]->weight);
         }
+        // Clean up allocated memory for edge
         delete sortEdges[i];
     }
     
