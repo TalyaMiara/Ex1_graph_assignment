@@ -1,3 +1,0 @@
-תעודת זהות: 325612695
-קישור להגשה: https://github.com/TalyaMiara/Ex1_graph_assignment.git
-פרטי ה-commit האחרון: finish
