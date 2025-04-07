@@ -1,3 +1,6 @@
+//taliyam123@gmail.com
+
+
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 #include "Algorithms.hpp"
@@ -278,4 +281,246 @@ TEST_CASE("MST"){
 
 }
 
+TEST_CASE("Graph"){
+    SUBCASE("Graph creation"){
+        CHECK_NOTHROW(Graph g(9));
+        CHECK_THROWS_WITH(Graph g(-1),"num of vertex must be positive");
+    }
+    SUBCASE("add and remove edges"){
+        Graph g(9);
+        CHECK_NOTHROW(g.addEdge(0, 1, 9));
+        CHECK_NOTHROW(g.addEdge(0, 3, 1));
+        CHECK_NOTHROW(g.addEdge(1, 2, 3));
+        CHECK_NOTHROW(g.addEdge(1, 4, 4));
+        CHECK_NOTHROW(g.addEdge(1, 5, 3));
+        CHECK_NOTHROW(g.addEdge(2, 3, 5));
+        CHECK_NOTHROW(g.addEdge(2, 5, 12));
+        CHECK_NOTHROW(g.addEdge(2, 4, 1));
+        CHECK_NOTHROW(g.addEdge(3, 6, 8));
+        CHECK_NOTHROW(g.addEdge(4, 8, 6));
+        CHECK_NOTHROW(g.addEdge(5, 7, 2));
+        CHECK_NOTHROW(g.addEdge(5, 6, 5));
+        CHECK_NOTHROW(g.addEdge(6, 7, 2));
+        CHECK_NOTHROW(g.addEdge(7, 8, 1));
+        CHECK_NOTHROW(g.addEdge(7, 5, 2));
+        CHECK_THROWS_WITH(g.addEdge(1,20,1),"the edge is not exist");
+        CHECK_THROWS_WITH(g.removeEdge(1,20),"the edge is not exist");
+        CHECK_THROWS_WITH(g.removeEdge(0,4),"the edge is not exist");
+        CHECK_NOTHROW(g.removeEdge(0,1));
+        CHECK_THROWS_WITH(g.removeEdge(0,1),"the edge is not exist");
+    }
+}
 
+TEST_CASE("BFS"){
+
+    SUBCASE("test graph number 1"){
+        graph::Graph g(7);
+        int* distance = new int[7];
+        Algorithms a;
+        g.addEdge(0, 1);
+        g.addEdge(0, 2);
+        g.addEdge(1, 3);
+        g.addEdge(1, 4);
+        g.addEdge(2, 5);
+        g.addEdge(2, 6);
+        Graph bfs = a.BFS(g, 0,distance);
+        CHECK(distance[0]==0);
+        CHECK(distance[1]==1);
+        CHECK(distance[2]==1);
+        CHECK(distance[3]==2);
+        CHECK(distance[4]==2);
+        CHECK(distance[5]==2);
+        CHECK(distance[6]==2);
+        delete[] distance;
+    }
+    SUBCASE("test graph number 2"){
+        graph::Graph g2(8);
+        Algorithms a;
+        int *distance2=new int[8];
+        g2.addEdge(0, 1);
+        g2.addEdge(0, 2);
+        g2.addEdge(1, 3);
+        g2.addEdge(1, 4);
+        g2.addEdge(2, 5);
+        g2.addEdge(2, 6);
+        g2.addEdge(5, 6);
+        g2.addEdge(3, 7);
+        Graph bfs = a.BFS(g2,0,distance2);
+        CHECK(distance2[0]==0);
+        CHECK(distance2[1]==1);
+        CHECK(distance2[2]==1);
+        CHECK(distance2[3]==2);
+        CHECK(distance2[4]==2);
+        CHECK(distance2[5]==2);
+        CHECK(distance2[6]==2);
+        CHECK(distance2[7]==3);
+        delete[] distance2;
+    }
+    SUBCASE("fake vtx"){
+        Graph dfs_try(9);
+        Algorithms a;
+        dfs_try.addEdge(0,1);
+        dfs_try.addEdge(0,5);
+        dfs_try.addEdge(2,1);
+        dfs_try.addEdge(7,1);
+        dfs_try.addEdge(0,7);
+        dfs_try.addEdge(2,6);
+        dfs_try.addEdge(5,4);
+        dfs_try.addEdge(5,8);
+        dfs_try.addEdge(6,7);
+        dfs_try.addEdge(6,8);
+        dfs_try.addEdge(7,8);
+        dfs_try.addEdge(3,4);
+        dfs_try.addEdge(3,2);
+        dfs_try.addEdge(3,6);
+        CHECK_THROWS_WITH(a.BFS(dfs_try,12),"source shoulde be between 0 to the num of vertex");
+    }
+    
+}
+
+TEST_CASE("DFS"){
+    SUBCASE("Test number 1"){
+        Graph dfs_try(9);
+        Algorithms a;
+        dfs_try.addEdge(0,1);
+        dfs_try.addEdge(0,5);
+        dfs_try.addEdge(2,1);
+        dfs_try.addEdge(7,1);
+        dfs_try.addEdge(0,7);
+        dfs_try.addEdge(2,6);
+        dfs_try.addEdge(5,4);
+        dfs_try.addEdge(5,8);
+        dfs_try.addEdge(6,7);
+        dfs_try.addEdge(6,8);
+        dfs_try.addEdge(7,8);
+        dfs_try.addEdge(3,4);
+        dfs_try.addEdge(3,2);
+        dfs_try.addEdge(3,6);
+        int* discover=new int[9];
+        int* finish=new int[9];
+        Graph dfs=a.DFS(dfs_try,0,discover,finish);
+        CHECK(discover[0]==1);
+        CHECK(discover[1]==7);
+        CHECK(discover[2]==6);
+        CHECK(discover[3]==5);
+        CHECK(discover[4]==10);
+        CHECK(discover[5]==11);
+        CHECK(discover[6]==4);
+        CHECK(discover[7]==2);
+        CHECK(discover[8]==3);
+        CHECK(finish[0]==18);
+        CHECK(finish[1]==8);
+        CHECK(finish[2]==9);
+        CHECK(finish[3]==14);
+        CHECK(finish[4]==13);
+        CHECK(finish[5]==12);
+        CHECK(finish[6]==15);
+        CHECK(finish[7]==17);
+        CHECK(finish[8]==16);
+        delete[] discover;
+        delete[] finish;
+    }
+
+    SUBCASE("fake vtx"){
+        Graph dfs_try(9);
+        Algorithms a;
+        dfs_try.addEdge(0,1);
+        dfs_try.addEdge(0,5);
+        dfs_try.addEdge(2,1);
+        dfs_try.addEdge(7,1);
+        dfs_try.addEdge(0,7);
+        dfs_try.addEdge(2,6);
+        dfs_try.addEdge(5,4);
+        dfs_try.addEdge(5,8);
+        dfs_try.addEdge(6,7);
+        dfs_try.addEdge(6,8);
+        dfs_try.addEdge(7,8);
+        dfs_try.addEdge(3,4);
+        dfs_try.addEdge(3,2);
+        dfs_try.addEdge(3,6);
+        CHECK_THROWS_WITH(a.DFS(dfs_try,12),"source should be between 0 to num of vertex");
+    }
+    
+    SUBCASE("unConnected"){
+        Graph g(9);
+        Algorithms a1;
+        g.addEdge(0,1);
+        g.addEdge(0,5);
+        g.addEdge(0,6);
+        g.addEdge(2,5);
+        g.addEdge(3,4);
+        g.addEdge(3,7);
+        g.addEdge(4,7);
+        g.addEdge(4,8);
+        g.addEdge(5,6);
+        int* discover=new int[9];
+        int* finish=new int[9];
+        Graph dfs1=a1.DFS(g,0,discover,finish);
+        CHECK(discover[0]==1);
+        CHECK(discover[1]==8);
+        CHECK(discover[2]==4);
+        CHECK(discover[3]==11);
+        CHECK(discover[4]==13);
+        CHECK(discover[5]==3);
+        CHECK(discover[6]==2);
+        CHECK(discover[7]==12);
+        CHECK(discover[8]==14);
+        CHECK(finish[0]==10);
+        CHECK(finish[1]==9);
+        CHECK(finish[2]==5);
+        CHECK(finish[3]==18);
+        CHECK(finish[4]==16);
+        CHECK(finish[5]==6);
+        CHECK(finish[6]==7);
+        CHECK(finish[7]==17);
+        CHECK(finish[8]==15);
+        delete[] discover;
+        delete[] finish;
+    }
+}
+TEST_CASE("dijikstra"){
+    Algorithms a;
+    SUBCASE("TEST 1"){
+        Graph d(4);
+        d.addEdge(0,1,10);
+        d.addEdge(0,2,5);
+        d.addEdge(1,2,4);
+        d.addEdge(2,3,1);
+        d.addEdge(1,3,2);
+        int* distance=new int[4];
+        Graph after=a.dijkstra(d,0,distance);
+
+        CHECK_NOTHROW(after.removeEdge(0,2));
+        CHECK_NOTHROW(after.removeEdge(3,2));
+        CHECK_NOTHROW(after.removeEdge(1,3));
+        CHECK_THROWS_WITH(after.removeEdge(0,1),"the edge is not exist");
+        CHECK_THROWS_WITH(after.removeEdge(0,3),"the edge is not exist");
+        CHECK_THROWS_WITH(after.removeEdge(2,1),"the edge is not exist");
+        CHECK(distance[0]==0);
+        CHECK(distance[1]==8);
+        CHECK(distance[2]==5);
+        CHECK(distance[3]==6);
+        delete[] distance;
+    }    
+    
+    SUBCASE("Negative weight"){
+        Graph d(4);
+        d.addEdge(0,1,10);
+        d.addEdge(0,2,5);
+        d.addEdge(1,2,4);
+        d.addEdge(2,3,1);
+        d.addEdge(1,3,-2);
+        CHECK_THROWS_WITH(a.dijkstra(d,0),"the weight of every edge must not be negative number");
+    }
+    
+    SUBCASE("fake vtx"){
+        Graph d(4);
+        d.addEdge(0,1,10);
+        d.addEdge(0,2,5);
+        d.addEdge(1,2,4);
+        d.addEdge(2,3,1);
+        d.addEdge(1,3,-2);
+        CHECK_THROWS_WITH(a.dijkstra(d,5),"the value of source should be between 0 to num of vertex");
+    }
+}
+    

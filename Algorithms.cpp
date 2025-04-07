@@ -75,7 +75,9 @@ void Algorithms::DFSVisit(Graph& g, int u, int* visited, int* parent, Graph& dfs
 Graph Algorithms::DFS(Graph& g, int src,int* disc, int* fin) {
     int numOfVertex = g.getNumOfVertex();
     Graph dfsTree(numOfVertex);
-
+    if(src<0||src>=numOfVertex){
+        throw std::invalid_argument("source should be between 0 to num of vertex");
+    }
     int* visited = new int[numOfVertex];
     int* parent = new int[numOfVertex];
     int* discovery = new int[numOfVertex];
@@ -121,16 +123,11 @@ Graph Algorithms::DFS(Graph& g, int src,int* disc, int* fin) {
 
     return dfsTree;
 }
-Graph Algorithms::dijkstra(Graph& g,int src){
+Graph Algorithms::dijkstra(Graph& g,int src,int* arr){
     int size= g.getNumOfVertex();
     if(src<0||src>=size){
         throw std:: invalid_argument("the value of source should be between 0 to num of vertex");
     }
-    Graph tree(g.getNumOfVertex());
-    int* distance=new int[size];
-    int* parent=new int[size];
-    MinHeap minHeap(size);
-
     Node** allEdge=g.getAdjencyList();
     for(int i=0;i<size;i++){
         Node* temp=allEdge[i];
@@ -141,6 +138,10 @@ Graph Algorithms::dijkstra(Graph& g,int src){
             temp=temp->next;
     }
     }
+    Graph tree(g.getNumOfVertex());
+    int* distance=new int[size];
+    int* parent=new int[size];
+    MinHeap minHeap(size);
     for ( int i = 0; i < size; i++)
     {
         distance[i]=INT_MAX;
@@ -156,6 +157,12 @@ Graph Algorithms::dijkstra(Graph& g,int src){
         while(adjencyList!=nullptr){
             realx(u,adjencyList->vertex,adjencyList->weight,distance,parent,minHeap);
             adjencyList=adjencyList->next;
+        }
+    }
+    if(arr!=nullptr){
+        for (int i = 0; i < size; i++)
+        {
+            arr[i]=distance[i];
         }
     }
     delete[] distance;

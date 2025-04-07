@@ -12,7 +12,7 @@ namespace graph{
         public:
             Graph BFS(Graph& g, int src,int* dist=nullptr);
             Graph DFS(Graph& g, int src,int* disc=nullptr, int* fin=nullptr);
-            Graph dijkstra(Graph& g,int src);
+            Graph dijkstra(Graph& g,int src,int* arr=nullptr);
             Graph prim(Graph& g);
             Graph kruskal(Graph& g);
         private:
